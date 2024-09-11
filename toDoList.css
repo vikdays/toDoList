@@ -1,0 +1,166 @@
+html, body {
+	background:#f7f1f1;
+	font-size:1.1rem;
+	font-family: 'Helvetica', sans-serif;
+	height:100%;
+}
+
+#toDoList {
+	margin:4rem auto;
+	padding:2rem 3rem 3rem;
+	max-width:500px;
+	background:#BDE8CA;
+	color:#FFF;
+	box-shadow:-20px -20px 0px 0px rgba(100,100,100,.1);
+}
+#toDoList h1 {
+    letter-spacing:0.05em;
+    font-weight:bold;
+    font-size:2.6rem;
+	color: #0D7C66;
+    border-bottom:1px solid rgba(255,255,255,.3); 
+}
+#toDoList h1 span {
+	display:block;
+	font-size:0.8rem;
+	margin-bottom:0.7rem;
+	margin-left:3px;
+	margin-top:0.2rem;  
+}
+
+ul li {
+	display: flex;
+	list-style: none;
+	font-size: 17px;
+	padding: 12px 8px 12px 50px;
+	user-select: none;
+	cursor: pointer;
+	position: relative; 
+    max-width: 450px; 
+    overflow-wrap: break-word; 
+    word-wrap: break-word; 
+    word-break: break-word; 
+    padding: 10px;
+}
+
+label {
+	display: flex;
+	color: #0D7C66;
+	min-width:100%;
+	letter-spacing:0.05em;
+	margin-bottom:.5rem;
+}
+
+input {
+	flex-grow:1;
+	border:none;
+	background:#f7f1f1;
+	padding:0 1.5em;
+	font-size:initial;
+}
+
+button.add {
+	padding:0 1.3rem;
+	border:none;
+	background:#0D7C66;
+	color:white;
+	text-transform:uppercase;
+	font-weight:bold;
+	border:1px solid rgba(255,255,255,.3);
+	margin-left:5px;
+	cursor:pointer;
+}
+button.add:hover {
+	background:#D7C3F1;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0px;
+}
+
+.delete-btn img {
+    vertical-align: middle;
+}
+
+input, 
+button {
+	font-family:'Quicksand', sans-serif;
+	height:3rem;
+}
+
+.description {
+	padding-left: 0;
+}
+
+.description li {
+	padding: 0.8em;
+	list-style-type: none;
+}
+
+input[type=checkbox] {
+	opacity: 0;
+	position: absolute;
+}
+
+input[type=checkbox], label {
+	display: block;
+	
+	margin: 5px;
+	cursor: pointer;
+}
+
+input[type=checkbox] + label:before {
+	content: '';
+	background: #BDE8CA;
+	border: 2px solid #0D7C66;
+	display: inline-block;
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+	text-align: center;
+	transition: background-color 0.3s ease; 
+}
+
+input[type=checkbox]:checked + label:before {
+	content: "";
+	background-color: #0D7C66; 
+	border: 2px solid #ddd;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+}
+
+.forFiles{
+	max-width:500px;
+	color:#FFF;
+	margin-top: 10px;
+}
+button.load {
+	padding:0 5.8rem;
+	height: 2em;
+	border:none;
+	background:#0D7C66;
+	color:white;
+	text-transform:uppercase;
+	font-weight:bold;
+	border:1px solid rgba(255,255,255,.3);
+	cursor:pointer;
+}
+button.save {
+	padding:0 5.8rem;
+	border:none;
+	height: 2em;
+	background:#0D7C66;
+	color:white;
+	text-transform:uppercase;
+	font-weight:bold;
+	border:1px solid rgba(255,255,255,.3);
+	margin-left:5px;
+	cursor:pointer;
+}
+	

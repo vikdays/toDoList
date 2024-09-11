@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="toDoList.css">
+</head>
+<body>
+<div class="container">
+    <div id="toDoList">
+        <h1>
+            To-Do List
+            <span>Time management is life management.</span>
+        </h1>
+        <div class="wrapper">
+            <ul class="description" ></ul>
+        </div>
+        
+        
+        <label id="label">Add to the To-Do list</label>
+        <input type="text" class="newitem" name="newitem" v-model="newitem" placeholder="Add your text">
+        <button class="add">Add item</button>
+        <div class="forFiles">
+            <button class="load">Load</button>
+            <button class="save">Save</button>
+            <input type="file" id="fileInput" accept="application/json" style="display: none;">
+        </div>
+    </div>
+    
+</div>    
+<script src="toDoList.js"></script>
+</body>
+</html>
