@@ -3,10 +3,11 @@ let addButton = document.querySelector('.add');
 let description = document.querySelector('.description');
 let toDoList = [];
 
-const API_URL = 'http://localhost:8090/api/tasks'; 
+const API_URL = 'http://localhost:8090/api/tasks';
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    fetchTasks();
+    fetchTasks(); 
 });
 
 addButton.addEventListener('click', function() {
@@ -16,15 +17,14 @@ addButton.addEventListener('click', function() {
         alert("You cannot add an empty task!");
         return;
     }
-    
-    const newCase = {
-        description: addMessage.value,
+   
+    const newTask = {
+        description: messageText,
         isDone: false
     };
 
-    toDoList.push(newCase);
-    displayMessages();
-    addMessage.value = "";
+    createTask(newTask);
+    addMessage.value = ""; 
 });
 
 function createTask(task) {
@@ -33,22 +33,37 @@ function createTask(task) {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include', 
         body: JSON.stringify(task),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(() => {
         fetchTasks(); 
     })
-    .catch(error => console.error('Error', error));
+    .catch(error => console.error('Ошибка при создании задачи:', error));
 }
+
 function fetchTasks() {
-    fetch(API_URL)
-        .then(response => response.json())
-        .then(data => {
-            toDoList = data;
-            displayMessages(); 
-        })
-        .catch(error => console.error('Error', error));
+    fetch(API_URL, {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        toDoList = data;
+        displayMessages(); 
+    })
+    .catch(error => console.error('Ошибка при загрузке задач:', error));
 }
 
 function displayMessages() {
@@ -61,10 +76,10 @@ function displayMessages() {
     toDoList.forEach(function(item, i) {
         displayMessage += `
         <li>
-            <input type='checkbox' id='item_${i}' ${item.isDone ? 'checked' : ''}>
+            <input type='checkbox' id='item_${i}' ${item.isDone ? 'checked' : ''} data-id="${item.id}">
             <label for='item_${i}' class='task-label'>${item.description}</label>
-            <button class="delete-btn" id="delete_${i}">
-                <img src="C:/Users/Виктория/Desktop/toDoList/images/delete.svg" alt="Delete" width="20" height="20">
+            <button class="delete-btn" id="delete_${i}" data-id="${item.id}">
+                <img src="images/delete.svg" alt="Delete" width="20" height="20">
             </button>
         </li>
         `;
@@ -72,9 +87,17 @@ function displayMessages() {
     
     description.innerHTML = displayMessage;
 
-    document.querySelectorAll('.delete-btn').forEach((button, index) => {
+    document.querySelectorAll('.delete-btn').forEach((button) => {
         button.addEventListener('click', function() {
-            deleteTask(index); 
+            let taskId = button.getAttribute('data-id');
+            deleteTask(taskId);
+        });
+    });
+
+    document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', function(event) {
+            let taskId = event.target.getAttribute('data-id');
+            toggleTaskStatus(taskId);
         });
     });
 
@@ -85,22 +108,33 @@ function displayMessages() {
     });
 }
 
-function deleteTask(index) {
-    toDoList.splice(index, 1);
-    displayMessages();
+function deleteTask(taskId) {
+    fetch(`${API_URL}/${taskId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        fetchTasks(); 
+    })
+    .catch(error => console.error('Ошибка при удалении задачи:', error));
 }
 
-description.addEventListener('change', function(event) {
-    let idInput = event.target.getAttribute('id');
-    let forLabel = description.querySelector('[for=' + idInput + ']');
-    let valueLabel = forLabel.innerHTML;
-
-    toDoList.forEach(function(item) {
-        if (item.description === valueLabel) {
-            item.isDone = !item.isDone;
+function toggleTaskStatus(taskId) {
+    fetch(`${API_URL}/${taskId}/change-flag`, {
+        method: 'PUT',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
-    });
-});
+        fetchTasks();
+    })
+    .catch(error => console.error('Ошибка при изменении статуса задачи:', error));
+}
 
 function editTask(index) {
     let taskLabel = document.querySelector(`label[for='item_${index}']`);
@@ -122,56 +156,25 @@ function saveEdit(index, newText) {
         return;
     }
     
-    toDoList[index].description = newText;
-    displayMessages();
-}
-
-document.querySelector('.save').addEventListener('click', function() {
-    saveToFile();
-});
-
-function saveToFile() {
-    if (toDoList.length === 0) {
-        alert("Can't save an empty to-do list!");
-        return;
-    }
-
-    const jsonData = JSON.stringify(toDoList, null, 2);
-    const blob = new Blob([jsonData], { type: "application/json" });
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "toDoList.json";
-
-    link.click();
-
-    URL.revokeObjectURL(link.href);
-}
-
-document.querySelector('.load').addEventListener('click', function() {
-    document.getElementById('fileInput').click();
-});
-
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    loadFromFile(event);
-});
-
-function loadFromFile(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-        const content = e.target.result;
-        try {
-            toDoList = JSON.parse(content);
-            displayMessages();
-        } catch (error) {
-            alert('Invalid JSON file!');
-        }
+    const updatedTask = {
+        ...toDoList[index],
+        description: newText
     };
-    
-    if (file) {
-        reader.readAsText(file);
-    }
+
+    fetch(`${API_URL}/${updatedTask.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedTask),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        fetchTasks(); 
+    })
+    .catch(error => console.error('Ошибка при редактировании задачи:', error));
 }
 
