@@ -5,11 +5,11 @@ let toDoList = [];
 
 const API_URL = 'http://localhost:8090/api/tasks';
 
-document.addEventListener('DOMContentLoaded', function () {
-    fetchTasks(); 
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTasks();
 });
 
-addButton.addEventListener('click', function () {
+addButton.addEventListener('click', function() {
     let messageText = addMessage.value.trim();
 
     if (messageText === "") {
@@ -32,14 +32,14 @@ function createTask(task) {
         headers: {
             'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'include', 
         body: JSON.stringify(task),
     })
-        .then(response => response.text()) 
-        .then(() => {
-            fetchTasks(); 
-        })
-        .catch(error => console.error('Ошибка при создании задачи:', error));
+    .then(response => response.text())
+    .then(() => {
+        fetchTasks();
+    })
+    .catch(error => console.error('Ошибка при создании задачи:', error));
 }
 
 function fetchTasks() {
@@ -59,13 +59,13 @@ function displayMessages() {
     }
 
     let displayMessage = "";
-    toDoList.forEach(function (item, i) {
+    toDoList.forEach(function(item, i) {
         displayMessage += `
         <li>
-            <input type='checkbox' id='item_${i}' ${item.isDone ? 'checked' : ''} onchange="changeFlag(${i})">
+            <input type='checkbox' id='item_${i}' ${item.isDone ? 'checked' : ''}>
             <label for='item_${i}' class='task-label'>${item.description}</label>
             <button class="delete-btn" id="delete_${i}">
-                <img src="images/delete.svg" alt="Delete" width="20" height="20">
+                <img src="C:/Users/Виктория/Desktop/toDoList/images/delete.svg" alt="Delete" width="20" height="20">
             </button>
         </li>
         `;
@@ -73,69 +73,101 @@ function displayMessages() {
 
     description.innerHTML = displayMessage;
 
+    document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+        checkbox.addEventListener('click', function(event) {
+            toggleTaskDone(index);
+        });
+    });
+
     document.querySelectorAll('.delete-btn').forEach((button, index) => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function() {
             deleteTask(index);
         });
     });
+
     document.querySelectorAll('.task-label').forEach((label, index) => {
-        label.addEventListener('dblclick', function () {
+        label.addEventListener('dblclick', function(event) {
+            event.stopPropagation();
             editTask(index);
         });
     });
 }
 
-function changeFlag(index) {
+function toggleTaskDone(index) {
     const task = toDoList[index];
+    task.isDone = !task.isDone;
+
+    updateTaskFlag(task);
+}
+
+function updateTaskFlag(task) {
     fetch(`${API_URL}/${task.id}/change-flag`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
         credentials: 'include',
+        body: JSON.stringify(task),
     })
-        .then(response => response.json())
-        .then(updatedTask => {
-            toDoList[index] = updatedTask;
-            displayMessages(); 
-        })
-        .catch(error => console.error('Ошибка при изменении флага задачи:', error));
+    .then(response => response.json())
+    .then(() => {
+        fetchTasks(); 
+    })
+    .catch(error => console.error('Ошибка при изменении флага задачи:', error));
 }
 
 function deleteTask(index) {
     const task = toDoList[index];
     fetch(`${API_URL}/${task.id}`, {
         method: 'DELETE',
-        credentials: 'include',
     })
-        .then(() => {
-            toDoList.splice(index, 1);
-            displayMessages();
-        })
-        .catch(error => console.error('Ошибка при удалении задачи:', error));
+    .then(() => {
+        fetchTasks();
+    })
+    .catch(error => console.error('Ошибка при удалении задачи:', error));
 }
 
-
 function editTask(index) {
-    let taskLabel = document.querySelector(`label[for='item_${index}']`);
-    let currentText = taskLabel.innerHTML;
+    const taskLabel = document.querySelector(`label[for='item_${index}']`);
+    const currentText = taskLabel.innerHTML;
+
     taskLabel.innerHTML = `<input type='text' class='edit-input' value='${currentText}' />`;
-    let editInput = taskLabel.querySelector('.edit-input');
+
+    const editInput = taskLabel.querySelector('.edit-input');
+
     editInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             saveEdit(index, editInput.value);
         }
     });
+
+    editInput.addEventListener('blur', function() {
+        saveEdit(index, editInput.value);
+    });
+
     editInput.focus();
 }
+
 function saveEdit(index, newText) {
     if (newText.trim() === "") {
         alert("You cannot leave the task description empty!");
         return;
     }
-    toDoList[index].description = newText;
-    displayMessages(); 
-    localStorage.setItem('description', JSON.stringify(toDoList)); 
+
+    const task = toDoList[index];
+    task.description = newText;
+
+    fetch(`${API_URL}/${task.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(task),
+    })
+    .then(response => response.json())
+    .then(() => {
+        fetchTasks();
+    })
+    .catch(error => console.error('Error', error));
 }
-
-
