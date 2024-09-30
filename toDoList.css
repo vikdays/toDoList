@@ -135,32 +135,5 @@ input[type=checkbox]:checked + label:before {
 	height: 20px;
 }
 
-.forFiles{
-	max-width:500px;
-	color:#FFF;
-	margin-top: 10px;
-}
-button.load {
-	padding:0 5.8rem;
-	height: 2em;
-	border:none;
-	background:#0D7C66;
-	color:white;
-	text-transform:uppercase;
-	font-weight:bold;
-	border:1px solid rgba(255,255,255,.3);
-	cursor:pointer;
-}
-button.save {
-	padding:0 5.8rem;
-	border:none;
-	height: 2em;
-	background:#0D7C66;
-	color:white;
-	text-transform:uppercase;
-	font-weight:bold;
-	border:1px solid rgba(255,255,255,.3);
-	margin-left:5px;
-	cursor:pointer;
-}
+
 	
