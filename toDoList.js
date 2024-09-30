@@ -3,9 +3,8 @@ let addButton = document.querySelector('.add');
 let description = document.querySelector('.description');
 let toDoList = [];
 
-const API_URL = 'https://vikdays.github.io/toDoList/'; // Обновите URL на тот, что используется в вашем проекте
+const API_URL = 'http://localhost:8090/api/tasks'; 
 
-// Загрузка задач с сервера при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     fetchTasks();
 });
