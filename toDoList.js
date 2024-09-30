@@ -3,10 +3,12 @@ let addButton = document.querySelector('.add');
 let description = document.querySelector('.description');
 let toDoList = [];
 
-if (localStorage.getItem('description')) {
-    toDoList = JSON.parse(localStorage.getItem('description'));
-    displayMessages();
-}
+const API_URL = 'https://vikdays.github.io/toDoList/'; // Обновите URL на тот, что используется в вашем проекте
+
+// Загрузка задач с сервера при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTasks();
+});
 
 addButton.addEventListener('click', function() {
     let messageText = addMessage.value.trim();
@@ -15,6 +17,7 @@ addButton.addEventListener('click', function() {
         alert("You cannot add an empty task!");
         return;
     }
+    
     const newCase = {
         description: addMessage.value,
         isDone: false
@@ -22,15 +25,39 @@ addButton.addEventListener('click', function() {
 
     toDoList.push(newCase);
     displayMessages();
-    localStorage.setItem('description', JSON.stringify(toDoList));
     addMessage.value = "";
 });
+
+function createTask(task) {
+    fetch(`${API_URL}/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(task),
+    })
+    .then(response => response.json())
+    .then(() => {
+        fetchTasks(); 
+    })
+    .catch(error => console.error('Error', error));
+}
+function fetchTasks() {
+    fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+            toDoList = data;
+            displayMessages(); 
+        })
+        .catch(error => console.error('Error', error));
+}
 
 function displayMessages() {
     if (toDoList.length === 0) {
         description.innerHTML = "";
         return;
     }
+
     let displayMessage = "";
     toDoList.forEach(function(item, i) {
         displayMessage += `
@@ -43,6 +70,7 @@ function displayMessages() {
         </li>
         `;
     });
+    
     description.innerHTML = displayMessage;
 
     document.querySelectorAll('.delete-btn').forEach((button, index) => {
@@ -60,18 +88,17 @@ function displayMessages() {
 
 function deleteTask(index) {
     toDoList.splice(index, 1);
-    displayMessages(); 
-    localStorage.setItem('description', JSON.stringify(toDoList));
+    displayMessages();
 }
 
 description.addEventListener('change', function(event) {
     let idInput = event.target.getAttribute('id');
     let forLabel = description.querySelector('[for=' + idInput + ']');
     let valueLabel = forLabel.innerHTML;
+
     toDoList.forEach(function(item) {
         if (item.description === valueLabel) {
             item.isDone = !item.isDone;
-            localStorage.setItem('description', JSON.stringify(toDoList));
         }
     });
 });
@@ -80,8 +107,8 @@ function editTask(index) {
     let taskLabel = document.querySelector(`label[for='item_${index}']`);
     let currentText = taskLabel.innerHTML;
     taskLabel.innerHTML = `<input type='text' class='edit-input' value='${currentText}' />`;
+    
     let editInput = taskLabel.querySelector('.edit-input');
-
     editInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             saveEdit(index, editInput.value);
@@ -95,9 +122,9 @@ function saveEdit(index, newText) {
         alert("You cannot leave the task description empty!");
         return;
     }
+    
     toDoList[index].description = newText;
-    displayMessages(); 
-    localStorage.setItem('description', JSON.stringify(toDoList)); 
+    displayMessages();
 }
 
 document.querySelector('.save').addEventListener('click', function() {
@@ -125,6 +152,7 @@ function saveToFile() {
 document.querySelector('.load').addEventListener('click', function() {
     document.getElementById('fileInput').click();
 });
+
 document.getElementById('fileInput').addEventListener('change', function(event) {
     loadFromFile(event);
 });
@@ -136,13 +164,13 @@ function loadFromFile(event) {
     reader.onload = function(e) {
         const content = e.target.result;
         try {
-            toDoList = JSON.parse(content); 
-            displayMessages(); 
-            localStorage.setItem('description', JSON.stringify(toDoList)); 
+            toDoList = JSON.parse(content);
+            displayMessages();
         } catch (error) {
             alert('Invalid JSON file!');
         }
     };
+    
     if (file) {
         reader.readAsText(file);
     }
