@@ -115,43 +115,27 @@ function deleteTask(index) {
         .catch(error => console.error('Ошибка при удалении задачи:', error));
 }
 
+
 function editTask(index) {
     let taskLabel = document.querySelector(`label[for='item_${index}']`);
     let currentText = taskLabel.innerHTML;
     taskLabel.innerHTML = `<input type='text' class='edit-input' value='${currentText}' />`;
-
     let editInput = taskLabel.querySelector('.edit-input');
-    editInput.addEventListener('keydown', function (event) {
+    editInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             saveEdit(index, editInput.value);
         }
     });
     editInput.focus();
-
-    editInput.addEventListener('click', function (event) {
-        event.stopPropagation();
-    });
 }
-
 function saveEdit(index, newText) {
     if (newText.trim() === "") {
         alert("You cannot leave the task description empty!");
         return;
     }
-
-    const task = toDoList[index];
-    fetch(`${API_URL}/${task.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ ...task, description: newText }),
-    })
-        .then(response => response.json())
-        .then(updatedTask => {
-            toDoList[index] = updatedTask;
-            displayMessages();
-        })
-        .catch(error => console.error('Error', error));
+    toDoList[index].description = newText;
+    displayMessages(); 
+    localStorage.setItem('description', JSON.stringify(toDoList)); 
 }
+
+
