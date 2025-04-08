@@ -2,13 +2,78 @@ html, body {
 	background:#f7f1f1;
 	font-size:1.1rem;
 	font-family: 'Helvetica', sans-serif;
-	height:100%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
+.container{
+	display: flex;
+	gap: 5%;
+	justify-content: center;
+	margin: 2% 5%;
+}
+
+.filters{
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	height: 100%;
+	padding:10px;
+	margin-top: 1.5%;
+}
+
+.filter{
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+#filters h1 {
+    letter-spacing:0.05em;
+    font-size:2rem;
+	color: #0D7C66;
+    border-bottom:1px solid rgba(255,255,255,.3); 
+}
+#filters h1 span {
+	display:block;
+	font-size:0.8rem; 
+}
+.task{
+	display: flex;
+	justify-content: space-between;
+}
+.task-meta{
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	color: rgba(100,100,100);
+	font-size: 15px;
+}
+.right {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	font-size: 15px;
+	color: rgba(100,100,100);
+}
+select{
+	padding:0 1.5em;
+	height:3rem;
+	font-size:1.1rem;
+	border: 1px solid #0D7C66;
+	color: #0D7C66;
+}
+.buttons{
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap:0.5%;
+}
 #toDoList {
-	margin:4rem auto;
+	display: flex;
+	align-content: center;
+	flex-direction: column;
 	padding:2rem 3rem 3rem;
-	max-width:500px;
 	background:#BDE8CA;
 	color:#FFF;
 	box-shadow:-20px -20px 0px 0px rgba(100,100,100,.1);
@@ -31,24 +96,20 @@ html, body {
 ul li {
 	display: flex;
 	list-style: none;
-	font-size: 17px;
-	padding: 12px 8px 12px 50px;
+	
 	user-select: none;
 	cursor: pointer;
 	position: relative; 
-    max-width: 450px; 
     overflow-wrap: break-word; 
     word-wrap: break-word; 
     word-break: break-word; 
-    padding: 10px;
 }
 
 label {
 	display: flex;
 	color: #0D7C66;
-	min-width:100%;
+
 	letter-spacing:0.05em;
-	margin-bottom:.5rem;
 }
 
 input {
@@ -72,6 +133,18 @@ button.add {
 }
 button.add:hover {
 	background:#D7C3F1;
+}
+button.cancel {
+	padding:0 1.3rem;
+	border:none;
+	background:rgba(100,100,100,.1);
+	text-transform:uppercase;
+	font-weight:bold;
+	margin-left:5px;
+	cursor:pointer;
+}
+button.cancel:hover {
+	background: rgba(100,100,100,.3);
 }
 
 .delete-btn {
@@ -135,5 +208,78 @@ input[type=checkbox]:checked + label:before {
 	height: 20px;
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
 
-	
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: black;
+}
+.modal-actions {
+  text-align: right;
+}
+
+
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1290px) {
+    .buttons{
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: stretch;
+		width: 100%;
+		gap:10px;
+	}
+    .container{
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+		margin: 2% 5%;
+	}
+	#toDoList {
+		padding:0px 2rem 10px;
+		box-shadow: none;
+  }
+}

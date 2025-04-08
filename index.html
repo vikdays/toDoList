@@ -8,6 +8,34 @@
 </head>
 <body>
 <div class="container">
+    <div class="filters" id="filters">
+        <h1 class="filter">
+            Filter
+            <span>Sort by:</span>
+        </h1>
+        <select id="statusFilter">
+            <option value="">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Overdue">Overdue</option>
+            <option value="Late">Late</option>
+            <option value="Completed">Completed</option>
+        </select>
+    
+        <select id="priorityFilter">
+            <option value="">Any prioirity</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+        </select>
+    
+        <select id="sortBy">
+            <option value="createdAt">New</option>
+            <option value="deadline">По дедлайну</option>
+            <option value="priority">Priority</option>
+            <option value="status">Status</option>
+        </select>
+    </div>
     <div id="toDoList">
         <h1>
             To-Do List
@@ -17,11 +45,73 @@
             <ul class="description" ></ul>
         </div>
         
-        
         <label id="label">Add to the To-Do list</label>
-        <input type="text" class="newitem" name="newitem" v-model="newitem" placeholder="Add your text">
-        <button class="add">Add item</button>
+        <div class="buttons">
+            <input type="text" class="newitem" placeholder="Title">
+            <input type="text" class="descitem" placeholder="Description">
+            <input type="date" class="deadlineitem">
+            
+            <select class="priorityitem">
+                <option value="">Priority</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+        
+            <button class="add">Add item</button>
+        </div>
+        
     </div>
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          
+          <div id="viewMode">
+            <h1 id="modalTitle"></h1>
+            <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+            <p><strong>Priority:</strong> <span id="modalPriority"></span></p>
+            <p><strong>Deadline:</strong> <span id="modalDeadline"></span></p>
+            <p><strong>Created:</strong> <span id="modalCreatedAt"></span></p>
+            <p><strong>Updated:</strong> <span id="modalUpdatedAt"></span></p>
+            
+            <div class="modal-actions">
+              <button id="editButton" class="add">Edit</button>
+            </div>
+          </div>
+          
+          <div id="editMode" style="display:none;">
+            <h2>Edit Task</h2>
+            <div class="form-group">
+              <label for="editTitle">Title:</label>
+              <input type="text" id="editTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="editDescription">Description:</label>
+              <textarea id="editDescription"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="editDeadline">Deadline:</label>
+              <input type="date" id="editDeadline">
+            </div>
+            <div class="form-group">
+              <label for="editPriority">Priority:</label>
+              <select id="editPriority">
+                <option value="">None</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelEdit" class="cancel">Cancel</button>
+                <button id="confirmSave" class="add">Save Changes</button>
+              </div>
+          </div>
+        </div>
+      </div>
     
 </div>    
 <script src="toDoList.js"></script>
