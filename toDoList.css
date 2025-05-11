@@ -52,7 +52,7 @@ html, body {
 .right {
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	gap: 15px;
 	font-size: 15px;
 	color: rgba(100,100,100);
 }
@@ -282,4 +282,18 @@ input[type=checkbox]:checked + label:before {
 		padding:0px 2rem 10px;
 		box-shadow: none;
   }
+}
+
+.task.task-overdue {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-left: 3px solid #ff0000; 
+}
+
+.task.task-urgent {
+    background-color: rgba(255, 165, 0, 0.1); 
+    border-left: 3px solid #ffa500; 
+}
+
+.task {
+    transition: all 0.3s ease;
 }

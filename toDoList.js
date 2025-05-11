@@ -120,8 +120,27 @@ function displayMessages() {
 
     let displayMessage = "";
     toDoList.forEach(function (item, i) {
+        let taskClass = "";
+        
+        if (!item.isDone) {
+            if (item.deadline) {
+                const deadlineDate = new Date(item.deadline);
+                const now = new Date();
+                deadlineDate.setHours(0, 0, 0, 0);
+                now.setHours(0, 0, 0, 0);
+                const timeDiff = deadlineDate.getTime() - now.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                if (timeDiff < 0) {
+                    taskClass = "task-overdue";
+                } else if (daysDiff <= 3 && daysDiff >= 0) {
+                    taskClass = "task-urgent";
+                }
+            }
+        }
+
         displayMessage += `
-        <li class="task">
+        <li class="task ${taskClass}">
             <div class="task-content" onclick="openTaskModal(${i})">
                 <div class="task-checkbox">
                     <input type='checkbox' id='item_${i}' ${item.isDone ? 'checked' : ''} 
@@ -134,7 +153,7 @@ function displayMessages() {
                 </div>
             </div>
             <div class="right">
-                <div><strong>Deadline:</strong> ${item.deadline || '—'}</div>
+                <div><strong>Deadline:</strong> ${item.deadline ? new Date(item.deadline).toLocaleDateString('ru-RU') : ' —————'}</div>
                 <button class="delete-btn" id="delete_${i}" onclick="deleteTask(${i}); event.stopPropagation()">
                     <img src="images/delete.svg" alt="Delete" width="25" height="25">
                 </button>
@@ -152,9 +171,9 @@ function openTaskModal(index) {
     modalDescription.textContent = currentEditingTask.description || '—';
     modalStatus.textContent = currentEditingTask.status || '—';
     modalPriority.textContent = currentEditingTask.priority || '—';
-    modalDeadline.textContent = currentEditingTask.deadline || '—';
-    modalCreatedAt.textContent = currentEditingTask.createdAt || '—';
-    modalUpdatedAt.textContent = currentEditingTask.updatedAt || '—';
+    modalDeadline.textContent = currentEditingTask.deadline ? new Date(currentEditingTask.deadline).toLocaleDateString('ru-RU') : '—';
+    modalCreatedAt.textContent = currentEditingTask.createdAt ? new Date(currentEditingTask.createdAt).toLocaleDateString('ru-RU') : '—';
+    modalUpdatedAt.textContent = currentEditingTask.updatedAt ? new Date(currentEditingTask.updatedAt).toLocaleDateString('ru-RU') : '—';
     exitEditMode();
     
     modal.style.display = "block";
@@ -177,19 +196,25 @@ function changeFlag(index) {
 }
 
 function deleteTask(index) {
-    if (!confirm("Are you sure you want to delete this task?")) {
-        return;
-    }
+    return new Promise((resolve) => {
+        if (!window.confirm("Are you sure you want to delete this task?")) {
+            return resolve(false);
+        }
 
-    const task = toDoList[index];
-    fetch(`${API_URL}/${task.id}`, {
-        method: 'DELETE',
-    })
-    .then(() => {
-        toDoList.splice(index, 1);
-        displayMessages();
-    })
-    .catch(error => console.error('Error', error));
+        const task = toDoList[index];
+        fetch(`${API_URL}/${task.id}`, {
+            method: 'DELETE',
+        })
+        .then(() => {
+            toDoList.splice(index, 1);
+            displayMessages();
+            resolve(true);
+        })
+        .catch(error => {
+            console.error('Error', error);
+            resolve(false);
+        });
+    });
 }
 
 function enterEditMode() {
